@@ -9,6 +9,17 @@ public class Decrypt
 	{
 		filedata = EncDec.xor(filedata, key);
 		filedata = EncDec.rtShift(filedata, key);
+		filedata = EncDec.xor(filedata, key);
+		filedata = EncDec.rtShift(filedata, key);
+		filedata = EncDec.rtShift(filedata, key);
+		filedata = EncDec.xor(filedata, key);
+		filedata = EncDec.rtShift(filedata, key);
+		filedata = EncDec.rtShift(filedata, key);
+		filedata = EncDec.xor(filedata, key);
+		filedata = EncDec.rtShift(filedata, key);
+		filedata = EncDec.xor(filedata, key);
+		filedata = EncDec.rtShift(filedata, key);
+		filedata = EncDec.xor(filedata, key);
 				
 		filename = filename.substring(0, filename.length()-4);
 		FileOutputStream fileOut = null;

@@ -1,6 +1,5 @@
 package encdec;
 
-import java.util.*;
 import java.io.*;
 
 public class EncDec
@@ -25,23 +24,30 @@ public class EncDec
 	
 	protected static byte[] lfShift(byte[] filedata, int key)
 	{
-		System.out.println("Byte0: " + filedata[0]);
-		if (filedata[0] < 0)
-			filedata[0] = (byte)(((int)filedata[0]<<1)+1);
-		else
-			filedata[0] = (byte)((int)filedata[0]<<1);
-		System.out.println("Byte0 after left shift: " + filedata[0]);
+		//System.out.println("Byte0: " + filedata[0]);
+		//for (int i=0; i<filedata.length; i++)
+		//	System.out.print(filedata[i]);
+		for (int i=0; i<filedata.length; i++)
+			if (filedata[i] < 0)
+				filedata[i] = (byte)(((int)filedata[i]<<1)+1);
+			else
+				filedata[i] = (byte)((int)filedata[i]<<1);
+		//System.out.println();
+		//for (int i=0; i<filedata.length; i++)
+		//	System.out.print(filedata[i]);
+		//System.out.println("Byte0 after left shift: " + filedata[0]);
 		return filedata;
 	}
 	
 	protected static byte[] rtShift(byte[] filedata, int key)
 	{
-		System.out.println("Byte0: " + filedata[0]);
-		if ((((int)filedata[0] % 2 == 1) && ((int)filedata[0] >= 0)) || (((int)filedata[0] % 2 == 0) && ((int)filedata[0] < 0)))
-			filedata[0] = (byte)(((int)filedata[0]>>1)+128);
-		else
-			filedata[0] = (byte)((int)filedata[0]>>1);
-		System.out.println("Byte0 after right shift: " + filedata[0]);
+		//System.out.println("Byte0: " + filedata[0]);
+		for (int i=0; i<filedata.length; i++)
+			if ((((int)filedata[i] % 2 == 1) && ((int)filedata[i] >= 0)) || (((int)filedata[i] % 2 == 0) && ((int)filedata[i] < 0)))
+				filedata[i] = (byte)(((int)filedata[i]>>1)+128);
+			else
+				filedata[i] = (byte)((int)filedata[i]>>1);
+		//System.out.println("Byte0 after right shift: " + filedata[0]);
 		return filedata;
 		
 	}
