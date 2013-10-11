@@ -5,6 +5,24 @@ import java.io.*;
 
 public class EncDec
 {
+	protected static byte[] xor(byte[] filedata, int key)
+	{
+		byte keydata[] = new byte[4];
+		for (int i=0; i<4; i++){
+			keydata[i] = (byte)(key>>(24-(8*i)));	//spread the key over a byte array
+			//System.out.println("Key" + i + ": " + keydata[i]);
+		}
+		for (int i=0; i<filedata.length; i=i+4){
+			int size = filedata.length - i;		//size of block to be decrypted (typically 4 bytes)
+			if (size >= 4)						//used to prevent errors if data is not multiple of 4 bytes
+				size = 4;
+			for (int j=0; j<size; j++){
+				filedata[j+i] = (byte) (filedata[j+i] ^ keydata[j]);
+			}
+		}
+		return filedata;
+	}
+	
 	protected static int hash(String pw)
 	{
 		int hash = 7;
