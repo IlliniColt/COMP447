@@ -8,6 +8,7 @@ public class Encrypt
 	public static void encrypt(byte[] filedata, int key, String filename)
 	{
 		filedata = EncDec.xor(filedata, key);
+		filedata = EncDec.lfShift(filedata, key);
 		
 		filename = filename.substring(0, filename.length()-4);
 		FileOutputStream fileOut = null;

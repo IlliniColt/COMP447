@@ -23,6 +23,29 @@ public class EncDec
 		return filedata;
 	}
 	
+	protected static byte[] lfShift(byte[] filedata, int key)
+	{
+		System.out.println("Byte0: " + filedata[0]);
+		if (filedata[0] < 0)
+			filedata[0] = (byte)(((int)filedata[0]<<1)+1);
+		else
+			filedata[0] = (byte)((int)filedata[0]<<1);
+		System.out.println("Byte0 after left shift: " + filedata[0]);
+		return filedata;
+	}
+	
+	protected static byte[] rtShift(byte[] filedata, int key)
+	{
+		System.out.println("Byte0: " + filedata[0]);
+		if ((((int)filedata[0] % 2 == 1) && ((int)filedata[0] >= 0)) || (((int)filedata[0] % 2 == 0) && ((int)filedata[0] < 0)))
+			filedata[0] = (byte)(((int)filedata[0]>>1)+128);
+		else
+			filedata[0] = (byte)((int)filedata[0]>>1);
+		System.out.println("Byte0 after right shift: " + filedata[0]);
+		return filedata;
+		
+	}
+	
 	protected static int hash(String pw)
 	{
 		int hash = 7;
