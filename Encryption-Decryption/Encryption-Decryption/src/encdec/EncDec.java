@@ -4,54 +4,75 @@ import java.io.*;
 
 public class EncDec
 {
-	protected static byte[] xor(byte[] filedata, int key)
+	private static final int KEYSIZE = 4;		//Size of key in bytes
+	
+	/**
+	 * Performs a bitwise exclusive or operation over the length of
+	 * a file by repeating a key over the file. Note that KEYSIZE 
+	 * must octal
+	 * 
+	 * @param data	byte array containing data to be manipulated
+	 * @param key	key that will be repeatedly XOR'ed over the data
+	 * @return		XOR'ed data
+	 */
+	protected static byte[] xor(byte[] data, int key)
 	{
-		byte keydata[] = new byte[4];
-		for (int i=0; i<4; i++){
-			keydata[i] = (byte)(key>>(24-(8*i)));	//spread the key over a byte array
-			//System.out.println("Key" + i + ": " + keydata[i]);
+		byte keydata[] = new byte[KEYSIZE];
+		for (int i=0; i<KEYSIZE; i++){
+			keydata[i] = (byte)(key>>(8*(KEYSIZE-(i+1))));	//spread the key over a byte array
 		}
-		for (int i=0; i<filedata.length; i=i+4){
-			int size = filedata.length - i;		//size of block to be decrypted (typically 4 bytes)
-			if (size >= 4)						//used to prevent errors if data is not multiple of 4 bytes
-				size = 4;
-			for (int j=0; j<size; j++){
-				filedata[j+i] = (byte) (filedata[j+i] ^ keydata[j]);
+		for (int i=0; i<data.length; i=i+KEYSIZE){
+			int size = data.length - i;		//size of block to be decrypted (typically KEYSIZE)
+			if (size >= KEYSIZE)			//used to prevent overrun errors at end of data set if 
+				size = KEYSIZE;				//data set size is not a multiple of KEYSIZE
+			
+			for (int j=0; j<size; j++){			//perform XOR over block of data from file 
+				data[j+i] = (byte) (data[j+i] ^ keydata[j]);
 			}
 		}
-		return filedata;
+		return data;
 	}
 	
-	protected static byte[] lfShift(byte[] filedata, int key)
+	/**
+	 * Performs a data shift on each byte of a file, shifting each
+	 * bit to the left and carrying the left-most bit to the right
+	 * 
+	 * @param data	byte array containing data to be shifted
+	 * @return		bitshifted byte array
+	 */
+	protected static byte[] lfShift(byte[] data)
 	{
-		//System.out.println("Byte0: " + filedata[0]);
-		//for (int i=0; i<filedata.length; i++)
-		//	System.out.print(filedata[i]);
-		for (int i=0; i<filedata.length; i++)
-			if (filedata[i] < 0)
-				filedata[i] = (byte)(((int)filedata[i]<<1)+1);
+		for (int i=0; i<data.length; i++)
+			if (data[i] < 0)					//carry the 1
+				data[i] = (byte)(((int)data[i]<<1)+1);
 			else
-				filedata[i] = (byte)((int)filedata[i]<<1);
-		//System.out.println();
-		//for (int i=0; i<filedata.length; i++)
-		//	System.out.print(filedata[i]);
-		//System.out.println("Byte0 after left shift: " + filedata[0]);
-		return filedata;
+				data[i] = (byte)((int)data[i]<<1);
+		return data;
 	}
 	
-	protected static byte[] rtShift(byte[] filedata, int key)
+	/**
+	 * Performs a data shift on each byte of a file, shifting each
+	 * bit to the right and carrying the right-most bit to the left
+	 * 
+	 * @param data	byte array containing data to be shifted
+	 * @return		bitshifted byte array
+	 */
+	protected static byte[] rtShift(byte[] data)
 	{
-		//System.out.println("Byte0: " + filedata[0]);
-		for (int i=0; i<filedata.length; i++)
-			if ((((int)filedata[i] % 2 == 1) && ((int)filedata[i] >= 0)) || (((int)filedata[i] % 2 == 0) && ((int)filedata[i] < 0)))
-				filedata[i] = (byte)(((int)filedata[i]>>1)+128);
+		for (int i=0; i<data.length; i++)
+			if ((((int)data[i] % 2 == 1) && ((int)data[i] >= 0)) || (((int)data[i] % 2 == 0) && ((int)data[i] < 0)))
+				data[i] = (byte)(((int)data[i]>>1)+128);			//carry the 1
 			else
-				filedata[i] = (byte)((int)filedata[i]>>1);
-		//System.out.println("Byte0 after right shift: " + filedata[0]);
-		return filedata;
-		
+				data[i] = (byte)((int)data[i]>>1);
+		return data;
 	}
 	
+	/**
+	 * A simple hashing algorithm to hash a password
+	 * 
+	 * @param pw	the password to hash
+	 * @return		hashed password as 32 bit int value
+	 */
 	protected static int hash(String pw)
 	{
 		int hash = 7;
@@ -59,10 +80,15 @@ public class EncDec
 		    hash = hash*31+pw.charAt(i);
 		} 
 		hash += 1717986918;			//creates more effective hashes, particularly with short passcodes
-		//System.out.println(hash);
 		return hash;
 	}
 	
+	/**
+	 * Reads file data into a byte array
+	 * 
+	 * @param filename	name of the file to be read in
+	 * @return			a byte array containing the contents of the file
+	 */
 	protected static byte[] getFile(String filename)
 	{
 		File file = new File(filename);
@@ -85,7 +111,5 @@ public class EncDec
 			System.exit(0);
 		}
 		return filedata;
-
 	}
-
 }

@@ -5,22 +5,42 @@ import java.io.*;
 
 public class Encrypt
 {
-	public static void encrypt(byte[] filedata, int key, String filename)
+	/**
+	 * Performs encryption operation consisting of bit-shifting and
+	 * using a key to perform bitwise exclusive or operations over
+	 * a set of data.
+	 * 
+	 * @param filedata	data to be encrypted
+	 * @param key		user provided key that will be used to encrypt the data
+	 * @return			encrypted data
+	 */
+	private static byte[] encrypt(byte[] filedata, int key)
 	{
 		filedata = EncDec.xor(filedata, key);
-		filedata = EncDec.lfShift(filedata, key);
+		filedata = EncDec.lfShift(filedata);
 		filedata = EncDec.xor(filedata, key);
-		filedata = EncDec.lfShift(filedata, key);
+		filedata = EncDec.lfShift(filedata);
 		filedata = EncDec.xor(filedata, key);
-		filedata = EncDec.lfShift(filedata, key);
-		filedata = EncDec.lfShift(filedata, key);
+		filedata = EncDec.lfShift(filedata);
+		filedata = EncDec.lfShift(filedata);
 		filedata = EncDec.xor(filedata, key);
-		filedata = EncDec.lfShift(filedata, key);
-		filedata = EncDec.lfShift(filedata, key);
+		filedata = EncDec.lfShift(filedata);
+		filedata = EncDec.lfShift(filedata);
 		filedata = EncDec.xor(filedata, key);
-		filedata = EncDec.lfShift(filedata, key);
+		filedata = EncDec.lfShift(filedata);
 		filedata = EncDec.xor(filedata, key);
 		
+		return filedata;
+	}
+	
+	/**
+	 * Writes encrypted data to file
+	 * 
+	 * @param filedata	encrypted byte array to be written to file
+	 * @param filename	name and path of file, which will be manipulated to create new file name
+	 */
+	private static void writeFile(byte[] filedata, String filename)
+	{		
 		filename = filename.substring(0, filename.length()-4);
 		FileOutputStream fileOut = null;
 		try {
@@ -30,35 +50,36 @@ public class Encrypt
 			System.exit(0);
 		}
 		DataOutputStream dataOut = new DataOutputStream(fileOut);
-//		for (int i=0; i < filedata.length; i++){
 			try {
 				dataOut.write(filedata);
-//				dataOut.writeChar((char)filedata[i]);
 			} catch (IOException e) {
 				System.out.println("IO Exception. Unable to write to file.");
 				System.exit(0);
 			}
-//		}
 	}
 	
 	public static void main(String[]args)
 	{
+		int key;				//encryption key that will be used for this operation
+		byte filedata[];		//array where file data is stored while operations are run over this data
+		
 		Scanner input = new Scanner(System.in);
 		
-		System.out.println("Enter a passcode to encrypt your data");
+		System.out.println("Enter a passcode to encrypt your data.\nFor best results, use at least 6 characters");
 		String pw = input.nextLine();
-		int key = EncDec.hash(pw);
+		while (pw.length() < 6){		//ensure that user chooses a secure passcode
+			System.out.println("Passcode too short. Enter a passcode that is at least 6 characters long");
+			pw = input.nextLine();
+		}
+		key = EncDec.hash(pw);			//hash the password to get the key
 		pw = null;						//clear password string from memory
 		
-		System.out.println("Enter name of file to be encrypted");
+		System.out.println("Enter path and name of file to be encrypted");
 		String filename = input.nextLine();
-		byte filedata[] = EncDec.getFile(filename);
+		filedata = EncDec.getFile(filename);
 		
-		/*		
-		 *		for (int i=0; i < filedata.length; i++){		//confirm that data read in properly
-		 *			System.out.print((char)filedata[i]);
-		 *
-		}*/
-		encrypt(filedata, key, filename);
+		filedata = encrypt(filedata, key);
+		
+		writeFile(filedata, filename);
 	}
 }
